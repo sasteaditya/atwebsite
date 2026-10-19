@@ -87,8 +87,20 @@ form.inq{padding:22px 26px 26px;display:grid;grid-template-columns:minmax(0,1fr)
 .req{color:#d14b3b;font-weight:700}
 form.inq .btn{grid-column:1/-1;justify-content:center;margin-top:4px}
 .f-note{grid-column:1/-1;font-size:13px;color:#5b6d85;margin:0;text-align:center}
-.f-done{padding:40px 26px;text-align:center}
-.f-done b{display:block;font-family:Archivo;font-size:22px;margin-bottom:8px}
+.f-done{padding:44px 26px 36px;text-align:center}
+.f-done[hidden],form.inq[hidden]{display:none!important}
+.f-done b{display:block;font-family:Archivo;font-size:24px;margin-bottom:8px}
+.f-done p{margin:0 auto 22px;max-width:380px;color:#5b6d85;line-height:1.55}
+.f-tick{width:76px;height:76px;margin:0 auto 18px;display:block}
+.f-tick circle{fill:#e8f7ee;stroke:#1f9d55;stroke-width:3;stroke-dasharray:166;stroke-dashoffset:166}
+.f-tick path{fill:none;stroke:#1f9d55;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:48;stroke-dashoffset:48}
+.f-done:not([hidden]) .f-tick circle{animation:ftk .6s ease forwards}
+.f-done:not([hidden]) .f-tick path{animation:ftk .4s .45s ease forwards}
+@keyframes ftk{to{stroke-dashoffset:0}}
+.f-done .btn{justify-content:center;min-width:160px}
+.f-done .f-note{margin-top:16px}
+html[data-theme=dark] .f-done p{color:#9fb0c7}
+html[data-theme=dark] .f-tick circle{fill:rgba(31,157,85,.15)}
 @media(max-width:520px){form.inq{grid-template-columns:minmax(0,1fr)}}
 .btn-ghost{border:1px solid rgba(255,255,255,.28);color:#fff}
 .btn-ghost:hover{background:rgba(255,255,255,.06)}
@@ -1175,9 +1187,12 @@ html[data-theme=dark] .conv{--hill:#15335a;--hill2:#1b4377}
     <button class="btn btn-primary" type="submit">Submit Inquiry</button>
     <p class="f-note">Or email us at info@adityatransport.com</p>
   </form>
-  <div class="f-done" id="inqDone" hidden>
-    <b>Thank you!</b>
-    <p>Your inquiry has reached us. Our team will contact you shortly.</p>
+  <div class="f-done" id="inqDone" hidden role="status" aria-live="polite">
+    <svg class="f-tick" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/><path d="M23 39l11 11 20-23"/></svg>
+    <b>Inquiry received</b>
+    <p>Thank you. Our team will call you shortly to confirm the rate and vehicle.</p>
+    <button class="btn btn-primary" type="button" data-close="inquiry">Close</button>
+    <p class="f-note">Urgent? Call +91 80075 00060</p>
   </div>
 </dialog>
 
@@ -1209,9 +1224,12 @@ html[data-theme=dark] .conv{--hill:#15335a;--hill2:#1b4377}
     <button class="btn btn-primary" type="submit">Send to vendor desk</button>
     <p class="f-note">Or email your RFQ to info@adityatransport.com</p>
   </form>
-  <div class="f-done" id="tenderDone" hidden>
-    <b>Thank you!</b>
-    <p>Your request has reached our vendor desk. We will respond shortly.</p>
+  <div class="f-done" id="tenderDone" hidden role="status" aria-live="polite">
+    <svg class="f-tick" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/><path d="M23 39l11 11 20-23"/></svg>
+    <b>Request received</b>
+    <p>Thank you. Our vendor desk will reply within one working day.</p>
+    <button class="btn btn-primary" type="button" data-close="tenderDlg">Close</button>
+    <p class="f-note">Urgent? Call +91 80075 00060</p>
   </div>
 </dialog>
 
@@ -1362,6 +1380,8 @@ form.addEventListener("submit", async e => {
     try {
       await fetch(INQUIRY_ENDPOINT, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
       form.hidden = true; document.getElementById("inqDone").hidden = false;
+      btn.disabled = false; btn.textContent = "Submit Inquiry"; form.reset();
+      dlg.scrollTop = 0;
     } catch (err) {
       btn.disabled = false; btn.textContent = "Submit Inquiry";
       alert("Could not send. Please email info@adityatransport.com");
@@ -1472,7 +1492,8 @@ function openInquiry(opts){
   if(opts.w){ fW.value = opts.w + " ton"; }
   if(opts.t){ fB.value = opts.t; }
   fillVehicles(opts.v);
-  dlg.showModal();
+  form.hidden = false; document.getElementById("inqDone").hidden = true;
+  dlg.showModal(); dlg.scrollTop = 0;
 }
 function bindInquiry(){
   document.querySelectorAll("#openInquiry, .open-inq").forEach(b => {
@@ -1557,11 +1578,12 @@ const dlg2=document.getElementById('tenderDlg'),f=document.getElementById('tende
 const L={company:"Company",name:"Contact person",designation:"Designation",phone:"Phone",email:"Email",enquiryType:"Request type",reference:"RFQ / reference no.",lanes:"Locations / lanes to quote",material:"Material",volume:"Estimated monthly volume",vehicles:"Vehicle types needed",duration:"Contract duration",lastDate:"Quote submission last date",docLink:"RFQ / vendor portal link",message:"Message"};
 document.getElementById('openTender').onclick=()=>{f.hidden=false;done.hidden=true;dlg2.showModal()};
 document.getElementById('closeTender').onclick=()=>dlg2.close();
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());
 dlg2.addEventListener('click',e=>{if(e.target===dlg2)dlg2.close()});
 f.addEventListener('submit',async e=>{e.preventDefault();
   const data=Object.fromEntries(new FormData(f));data.formType="Vendor / RFQ";data.submittedAt=new Date().toISOString();
   if(INQUIRY_ENDPOINT){const b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Sending...';
-    try{await fetch(INQUIRY_ENDPOINT,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});f.hidden=true;done.hidden=false;f.reset();b.disabled=false;b.textContent='Send to vendor desk'}
+    try{await fetch(INQUIRY_ENDPOINT,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});f.hidden=true;done.hidden=false;f.reset();b.disabled=false;b.textContent='Send to vendor desk';dlg2.scrollTop=0}
     catch(err){b.disabled=false;b.textContent='Send to vendor desk';alert('Could not send. Please email info@adityatransport.com')}
   }else{
     const body=Object.entries(data).filter(([k,v])=>v&&k!=='submittedAt'&&k!=='formType').map(([k,v])=>(L[k]||k)+': '+v).join('\n');
