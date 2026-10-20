@@ -696,6 +696,8 @@ html[data-theme=dark] .td-bg .chip b{color:#fff}
 .svc{padding:50px 0 40px;color:#0b1f3a}
 .svc-in{max-width:1200px;margin:auto;padding:0 24px}
 .svc h2{font-family:Archivo;font-weight:900;font-size:clamp(30px,4vw,46px);line-height:1.1;letter-spacing:-.01em;margin:12px 0 14px;color:#0b1f3a}
+.svc-hl{background:linear-gradient(transparent 58%,rgba(245,179,36,.55) 58%);color:#0b1f3a;font-weight:700;padding:0 3px;border-radius:2px}
+html[data-theme=dark] .svc-hl{color:#fff;background:linear-gradient(transparent 58%,rgba(245,179,36,.45) 58%)}
 .svc-lead{color:#4a5d78;font-size:18px;line-height:1.6;max-width:680px;margin:0 0 40px}
 .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .svc-card{position:relative;background:#fff;border:1px solid #dce6f2;border-radius:18px;padding:24px 24px 22px;box-shadow:0 10px 30px rgba(11,31,58,.06);overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
@@ -899,7 +901,7 @@ html[data-theme=dark] .conv{--hill:#15335a;--hill2:#1b4377}
   <div class="svc-in">
     <span class="kicker">Our services</span>
     <h2>Transport built around industrial cargo</h2>
-    <p class="svc-lead">Since 2008 we have moved steel, pipes and heavy loads for plants and fabricators across India. Whatever the load, you get the right vehicle, on time, with the paperwork done.</p>
+    <p class="svc-lead"><mark class="svc-hl">Since 2008</mark>, we have moved steel, pipes and heavy loads for plants and fabricators across India. Whatever the load, you get the right vehicle, on time, with the paperwork done.</p>
     <div class="svc-grid">
       <article class="svc-card" style="--ac:#f59e0b">
         <div class="svc-top"><span class="svc-ic"><svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h16v11H3z"/><path d="M19 13h4l4 4v3H19"/><circle cx="9" cy="23" r="2.4"/><circle cx="22" cy="23" r="2.4"/></svg></span><span class="svc-n">01</span></div>
