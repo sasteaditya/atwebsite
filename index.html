@@ -543,6 +543,7 @@ html[data-theme=dark] .cb-list li{color:#e9f1fa}
 html[data-theme=dark] .cb-list li:hover,html[data-theme=dark] .cb-list li.act{background:rgba(245,179,36,.22)}
 .hero,.hero-in,.hero-right,.card.qc{overflow:visible}
 
+.hero-right>.qc{order:-1}
 @media(max-width:980px){
   .hero-right{display:contents}
   .hero-left{display:contents}
@@ -590,7 +591,7 @@ html[data-theme=dark] .menu-btn span{background:#fff}
 .sc-sm circle:nth-child(2){animation-delay:1.7s}.sc-sm circle:nth-child(3){animation-delay:3.4s}
 @keyframes scsm{0%{transform:translate(0,0) scale(.5);opacity:.85}100%{transform:translate(20px,-50px) scale(1.8);opacity:0}}
 .sc-road{fill:#1b2b44}.sc-rl{stroke:#fff;stroke-width:3;stroke-dasharray:18 22;animation:scrd .9s linear infinite}
-@keyframes scrd{to{stroke-dashoffset:-40}}
+@keyframes scrd{to{stroke-dashoffset:40}}
 .sc-truck{animation:scbump 1.1s ease-in-out infinite}@keyframes scbump{50%{transform:translateY(-1.6px)}}
 .sc-wh{transform-box:fill-box;transform-origin:center;animation:scsp .9s linear infinite}@keyframes scsp{to{transform:rotate(360deg)}}
 .sc-tx{font:800 13px Archivo,"IBM Plex Sans",sans-serif;letter-spacing:.14em;fill:#fff}
@@ -880,7 +881,7 @@ html[data-theme=dark] .conv{--hill:#15335a;--hill2:#1b4377}
       <form id="qcForm" class="qc-f" autocomplete="off">
         <div class="qc-route">
           <label><small>Pickup</small><input role="combobox" aria-autocomplete="list" aria-expanded="false" id="qcFrom" placeholder="Type any city or plant" required></label>
-          <button type="button" class="qc-swap" id="qcSwap" aria-label="Swap pickup and drop"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4"/></svg></button>
+          <button type="button" class="qc-swap" id="qcSwap" aria-label="Swap pickup and drop"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h16M15 4l4 4-4 4M21 16H5M9 12l-4 4 4 4"/></svg></button>
           <label><small>Drop</small><input role="combobox" aria-autocomplete="list" aria-expanded="false" id="qcTo" placeholder="Type any city or plant" required></label>
         </div>
         
