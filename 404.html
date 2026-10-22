@@ -7,10 +7,34 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1f3a;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:24px}
-h1{font-size:64px;margin:0;color:#f5a623}p{color:#c8d3e3;margin:12px 0 24px}
-a{display:inline-block;background:#f5a623;color:#0b1f3a;padding:12px 22px;border-radius:999px;font-weight:700;text-decoration:none}
+:root{--bg:#f3f7fc;--ink:#0b1f3a;--muted:#4a5d78;--blue:#1f7fc0;--road:#0b1f3a;--lane:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1f3a;--ink:#e9f1fa;--muted:#a9bcd3;--blue:#6fc0f0;--road:#c9d8ea;--lane:#0b1f3a}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.n{font:900 clamp(80px,18vw,120px)/1 Georgia,serif;color:var(--blue)}
+h1{font:700 clamp(24px,5vw,32px) Georgia,serif;margin:8px 0 10px}
+p{color:var(--muted);margin:0 0 6px;font-size:17px}
+.road{position:relative;margin:30px auto 26px;width:min(640px,92vw);height:92px;border-bottom:10px solid var(--road);border-radius:0 0 4px 4px;overflow:hidden}
+.road:after{content:"";position:absolute;left:0;right:0;bottom:-6px;border-top:3px dashed var(--lane)}
+.truck{position:absolute;bottom:0;left:-190px;animation:drive 3.2s cubic-bezier(.2,.7,.3,1) .3s forwards}
+@keyframes drive{to{left:calc(100% - 300px)}}
+.sign{position:absolute;right:20px;bottom:0}
+.btn{display:inline-block;background:#f5b324;color:#0b1f3a;padding:13px 24px;border-radius:999px;font-weight:700;text-decoration:none;margin:6px;border:2px solid #f5b324}
+.btn.o{background:transparent;border-color:var(--blue);color:var(--blue)}
+@media(prefers-color-scheme:dark){.truck [fill="#0b1f3a"],.sign rect[fill="#0b1f3a"]{fill:#c9d8ea}.truck circle[fill="#c9d8ea"]{fill:#0b1f3a}}
+@media(prefers-reduced-motion:reduce){.truck{animation:none;left:calc(100% - 300px)}}
 </style>
 </head>
-<body><main><h1>404</h1><p>This page took a wrong turn. Let us get you back on the road.</p><a href="/">Back to Aditya Transport</a></main></body>
+<body>
+<main>
+<div class="n">404</div>
+<h1>This load took a wrong turn.</h1>
+<p>We couldn't find this page, but we'll get you back on route.</p>
+<div class="road" aria-hidden="true">
+<svg class="truck" viewBox="0 0 200 80" width="170"><rect x="6" y="14" width="110" height="38" rx="5" fill="#f5b324"/><path d="M122 52V22q0-6 7-6h26q9 0 15 12l10 14v10z" fill="#1f7fc0"/><path d="M138 22h16l9 14h-25z" fill="#dff1fb"/><rect x="0" y="52" width="190" height="8" rx="3" fill="#0b1f3a"/><circle cx="34" cy="62" r="13" fill="#0b1f3a"/><circle cx="34" cy="62" r="5" fill="#c9d8ea"/><circle cx="90" cy="62" r="13" fill="#0b1f3a"/><circle cx="90" cy="62" r="5" fill="#c9d8ea"/><circle cx="160" cy="62" r="13" fill="#0b1f3a"/><circle cx="160" cy="62" r="5" fill="#c9d8ea"/></svg>
+<svg class="sign" viewBox="0 0 70 70" width="62" height="62"><rect x="33" y="30" width="4" height="40" fill="#0b1f3a"/><rect x="4" y="4" width="62" height="32" rx="4" fill="#e11d48"/><text x="35" y="26" font-size="12" text-anchor="middle" fill="#fff" font-weight="700" font-family="system-ui,sans-serif">CLOSED</text></svg>
+</div>
+<a class="btn" href="/">Back to home</a><a class="btn o" href="/#quote">Get a quote</a>
+</main>
+</body>
 </html>
