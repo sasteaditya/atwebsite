@@ -840,6 +840,15 @@ html[data-theme=dark] .login-btn:hover{background:#9fd6f5;color:#0b1f3a}
 html[data-theme=dark] .m-menu .m-login{border-color:#9fd6f5;color:#9fd6f5!important}
 @media(max-width:860px){.login-btn{order:1;margin-left:auto;padding:0 13px}.nav-in .theme-btn{margin-left:0}.m-login{display:none}}
 @media(min-width:861px){.m-login{display:none}}
+#exitDlg{max-width:440px;overflow:hidden;background:linear-gradient(160deg,#0b1f3a,#14406e);color:#fff;text-align:center}
+.ex{position:relative;padding:34px 28px 26px}
+.ex-x{position:absolute;right:12px;top:8px;background:none;border:0;color:#fff;font-size:30px;line-height:1;cursor:pointer;opacity:.8}
+.ex-badge{display:inline-block;font:700 12px "IBM Plex Sans",system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#f5b324;border:1px solid rgba(245,179,36,.5);border-radius:999px;padding:5px 12px}
+.ex-off{margin:14px 0 6px;font:900 22px Archivo,Georgia,serif;color:#f5b324}.ex-off b{font-size:76px;line-height:1;letter-spacing:-.03em}
+.ex h2{margin:0 0 10px;font:700 22px Georgia,serif;color:#fff}
+.ex p{margin:0 0 20px;color:#c8d9ec;font-size:15.5px;line-height:1.55}
+.ex-go{width:100%;justify-content:center}
+.ex-no{display:block;margin:14px auto 0;background:none;border:0;color:#9fb6d0;font-size:14px;cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -1243,6 +1252,17 @@ html[data-theme=dark] .m-menu .m-login{border-color:#9fd6f5;color:#9fd6f5!import
   </div>
 </footer>
 
+<dialog id="exitDlg" aria-labelledby="exTitle">
+  <div class="ex">
+    <button type="button" class="ex-x" id="exClose" aria-label="Close">&times;</button>
+    <div class="ex-badge">Wait, before you go</div>
+    <div class="ex-off"><b>10%</b> OFF</div>
+    <h2 id="exTitle">Your first 3 trips with Aditya Transport</h2>
+    <p>Tell us your route and load. We will send you a quote with 10% off on your first 3 trips.</p>
+    <button type="button" class="btn btn-primary open-inq ex-go" id="exGo">Claim my 10% off &rarr;</button>
+    <button type="button" class="ex-no" id="exNo">No thanks, maybe later</button>
+  </div>
+</dialog>
 <dialog id="inquiry" aria-labelledby="inqTitle">
   <div class="f-head">
     <div><h2 id="inqTitle">Send an Inquiry</h2><p>Share your load details and we will get back to you shortly.</p></div>
@@ -1745,5 +1765,25 @@ f.addEventListener('submit',async e=>{e.preventDefault();
 s.classList.add('pre');var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){s.classList.remove('pre');s.classList.add('go');io.disconnect();}});},{threshold:.12});io.observe(s);})();
 </script>
 
+<script>
+/* Exit-intent offer (desktop) */
+(function(){
+  var d=document.getElementById('exitDlg');if(!d||!d.showModal)return;
+  var KEY='at-exit',DAYS=3,t0=Date.now(),done=false;
+  function seen(){try{var v=localStorage.getItem(KEY);return v&&(Date.now()-+v)<DAYS*864e5}catch(e){return done}}
+  function mark(){done=true;try{localStorage.setItem(KEY,String(Date.now()))}catch(e){}}
+  function anyOpen(){return document.querySelector('dialog[open]')}
+  function show(){if(done||seen()||anyOpen()||Date.now()-t0<5000)return;mark();d.showModal()}
+  document.addEventListener('mouseout',function(e){if(!e.relatedTarget&&e.clientY<=0)show()});
+  document.getElementById('exClose').addEventListener('click',function(){d.close()});
+  document.getElementById('exNo').addEventListener('click',function(){d.close()});
+  document.getElementById('exGo').addEventListener('click',function(){
+    d.close();mark();
+    setTimeout(function(){var m=document.querySelector('#inqForm [name=message]');if(m&&!m.value)m.value='Offer: 10% off on first 3 trips'},0);
+  });
+  d.addEventListener('click',function(e){if(e.target===d)d.close()});
+})();
+</script>
+<script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="87a2bb96-05b2-4b92-a79f-6949166439e6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
 </body>
 </html>
