@@ -53,14 +53,31 @@ button.go:disabled{opacity:.6;cursor:wait}
 .links{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
 .links a{color:var(--blue);font-weight:600;text-decoration:none}
 .help{margin-top:22px;text-align:center;color:var(--muted);font-size:14px}.help a{color:var(--blue);font-weight:600;text-decoration:none}
-.ld{display:flex;align-items:center;gap:14px;padding:6px 2px;color:var(--muted);font-weight:600}
-.sp{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--blue);animation:spin .8s linear infinite;flex:none}
-.ld .tr{position:relative;flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
-.ld .tr:after{content:"";position:absolute;top:0;bottom:0;width:38%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--blue));animation:slide 1.2s ease-in-out infinite}
-button.go .sp{display:inline-block;vertical-align:-6px;width:18px;height:18px;border-width:2.5px;border-color:rgba(11,31,58,.25);border-top-color:#0b1f3a;margin-right:8px}
+.sp{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(11,31,58,.25);border-top-color:#0b1f3a;animation:spin .8s linear infinite;display:inline-block;vertical-align:-4px;margin-right:8px}
+.loader{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:6px 0 2px}
+.ring{width:50px;height:50px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--amber);border-right-color:var(--blue);animation:spin .9s linear infinite}
+.ltext{font-weight:600;min-height:24px}
+.lsub{font-size:13px;color:var(--muted);margin-top:-6px}
+.bar{width:100%;height:5px;border-radius:4px;background:var(--line);overflow:hidden;position:relative}
+.bar span{position:absolute;top:0;bottom:0;width:35%;border-radius:4px;background:linear-gradient(90deg,var(--amber),var(--blue));animation:slide 1.3s ease-in-out infinite}
+.skel{width:100%;display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.skel div{display:flex;gap:12px;align-items:center}
+.skel i{display:block;width:26px;height:26px;border-radius:50%;flex:none}
+.skel b{display:block;height:12px;border-radius:6px;flex:1}
+.skel i,.skel b{background:linear-gradient(90deg,var(--line) 25%,var(--field) 50%,var(--line) 75%);background-size:200% 100%;animation:shim 1.4s ease-in-out infinite}
+.upd{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:12px}
+.upd i{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:breathe 1s ease-in-out infinite}
+.badge{display:flex;gap:12px;align-items:flex-start;margin-bottom:4px}
+.badge .ic{font-size:22px;line-height:1.2;flex:none}
+.ok{background:var(--okbg);color:var(--ok)}.warn{background:var(--warnbg);color:var(--warn)}
+.msg{margin-top:12px}
+#res{margin-bottom:16px}
+#res[hidden],.msg[hidden]{display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes slide{0%{left:-40%}100%{left:102%}}
-@media(prefers-reduced-motion:reduce){.sp,.ld .tr:after{animation-duration:2.4s}}
+@keyframes slide{0%{left:-35%}100%{left:100%}}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.sp,.ring,.bar span,.skel i,.skel b{animation:breathe 1.2s ease-in-out infinite}.bar span{left:0;width:100%}}
 </style>
 </head>
 <body>
@@ -69,57 +86,91 @@ button.go .sp{display:inline-block;vertical-align:-6px;width:18px;height:18px;bo
   <a class="back" href="/">&larr; Back to website</a>
 </header>
 <main>
-  <h1>Track your shipment</h1>
+  <h1 id="ttl">Track your shipment</h1>
   <p class="lead">Enter the LR number from your lorry receipt and the vehicle number to see where your load stands.</p>
+  <section class="card" id="res" hidden></section>
   <form class="card" id="f" autocomplete="off" novalidate>
     <div class="f"><label for="lr">LR number</label><input id="lr" name="lr" placeholder="Enter LR number" inputmode="text" autocapitalize="characters" required></div>
     <div class="f"><label for="veh">Vehicle number</label><input id="veh" name="veh" placeholder="Enter vehicle number" autocapitalize="characters" required></div>
     <button class="go" type="submit" id="go">Track shipment</button>
     <p class="hint">Both are printed on your LR. Spaces and dashes do not matter.</p>
-    <div id="out" aria-live="polite"></div>
+    <div class="badge bad msg" id="msg" hidden role="alert"></div>
   </form>
   <p class="help">Need help? Call <a href="tel:+918007500060">+91 80075 00060</a> or write to <a href="mailto:info@adityatransport.com">info@adityatransport.com</a></p>
 </main>
 <script>
 (function(){
-  var SCRIPT_URL="https://script.google.com/macros/s/AKfycbzSpHDJ2-i3b35geMmvIl3z8ZbAuBX0q1aK67kpYssWdmNwEsm7xXbnmhusUfHM33Ae/exec";
+  var API="https://script.google.com/macros/s/AKfycbzSpHDJ2-i3b35geMmvIl3z8ZbAuBX0q1aK67kpYssWdmNwEsm7xXbnmhusUfHM33Ae/exec";
   try{var t=localStorage.getItem('at-theme');if(t)document.documentElement.dataset.theme=t;else if(matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.dataset.theme='dark'}catch(e){}
-  var f=document.getElementById('f'),out=document.getElementById('out'),go=document.getElementById('go');
+  var $=function(id){return document.getElementById(id)},f=$('f'),go=$('go'),res=$('res'),msg=$('msg');
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-  function err(m){out.innerHTML='<div class="badge bad">'+esc(m)+'</div>'}
-  function show(d){
+  function call(body){
+    var ctl=new AbortController(),tm=setTimeout(function(){ctl.abort()},30000);
+    return fetch(API,{method:'POST',body:JSON.stringify(body),signal:ctl.signal}).then(function(r){return r.json()}).then(function(j){clearTimeout(tm);return j},function(e){clearTimeout(tm);throw e});
+  }
+  function badge(cls,icon,title,sub){return '<div class="badge '+cls+'" role="status"><div class="ic" aria-hidden="true">'+icon+'</div><div>'+title+(sub?'<small>'+sub+'</small>':'')+'</div></div>'}
+  var ltimer=0;
+  function showRes(h){clearInterval(ltimer);res.innerHTML=h;res.hidden=false}
+  function hideRes(){clearInterval(ltimer);res.hidden=true}
+  function setMsg(m){msg.textContent=m;msg.hidden=false}
+  function showLoading(first){
+    var m=[first||'Connecting to Aditya Transport...','Checking this LR...','Fetching delivery status...','Almost there...','Still working, this can take up to 15 seconds...'];
+    showRes('<div class="loader" role="status" aria-live="polite"><div class="ring" aria-hidden="true"></div><div class="ltext" id="ltext">'+esc(m[0])+'</div><div class="lsub" id="lsub">Please keep this page open</div><div class="bar" aria-hidden="true"><span></span></div><div class="skel" aria-hidden="true"><div><i></i><b></b></div><div><i></i><b style="max-width:75%"></b></div><div><i></i><b style="max-width:55%"></b></div></div></div>');
+    var i=0,t0=Date.now();
+    ltimer=setInterval(function(){var el=$('ltext'),sb=$('lsub');if(!el){clearInterval(ltimer);return}
+      i=Math.min(i+1,m.length-1);el.textContent=m[i];sb.textContent='Please keep this page open \u00b7 '+Math.round((Date.now()-t0)/1000)+'s'},2500);
+  }
+  function cget(k){try{return JSON.parse(localStorage.getItem('trk:'+k)||'null')}catch(e){return null}}
+  function cput(k,j){try{localStorage.setItem('trk:'+k,JSON.stringify(j))}catch(e){}}
+  function render(d,stale){
     var done=!!d.delivered;
     var steps=[
-      {c:'done',t:'LR issued',s:esc(d.date)+(d.from?' &middot; '+esc(d.from):'')},
-      {c:done?'done':'now',t:done?'In transit, completed':'In transit',s:'Vehicle '+esc(d.veh)+((d.fromPlace||d.toPlace)?' &middot; '+esc(d.fromPlace||'')+' &rarr; '+esc(d.toPlace||''):'')},
-      {c:done?'done':'wait',t:done?'Delivered':'Delivery',s:done?(esc(d.deliveredOn)+(d.to?' &middot; '+esc(d.to):'')):(d.to?'To '+esc(d.to):'Pending')}
+      {c:'done',i:'&#10003;',t:'LR issued',s:esc(d.date)+(d.from?' &middot; Booked by '+esc(d.from):'')},
+      {c:done?'done':'now',i:done?'&#10003;':'',t:done?'Transported':'In transit',s:(d.veh?'Vehicle '+esc(d.veh):'On the way')+((d.fromPlace||d.toPlace)?' &middot; '+esc(d.fromPlace||'')+' &rarr; '+esc(d.toPlace||''):'')},
+      {c:done?'done':'wait',i:done?'&#10003;':'',t:done?'Delivered':'Delivery',s:done?((d.deliveredOn?esc(d.deliveredOn)+' &middot; ':'')+'Delivered to '+esc(d.to||'consignee')):'Awaiting delivery to '+esc(d.to||'consignee')}
     ];
-    var li=steps.map(function(x){return '<li class="'+x.c+'"><span class="dot">'+(x.c==='done'?'&#10003;':'')+'</span><b>'+x.t+'</b><span>'+x.s+'</span></li>'}).join('');
-    var vl=d.k?'<a href="https://lr.adityatransport.com/verify.html?lr='+encodeURIComponent(d.lrNo)+'&k='+encodeURIComponent(d.k)+'" target="_blank" rel="noopener">Verify this LR</a>':'';
-    out.innerHTML='<div class="lrhead"><span class="no">'+esc(d.lrNo)+'</span><span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span></div>'
-      +'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>'
-      +'<ul class="tl">'+li+'</ul><div class="links">'+vl+'<a href="tel:+918007500060">Call us about this LR</a></div>';
+    var li=steps.map(function(x){return '<li class="'+x.c+'"><span class="dot" aria-hidden="true">'+x.i+'</span><b>'+x.t+'</b><span>'+x.s+'</span></li>'}).join('');
+    var share=d.k?'<a href="/track?lr='+encodeURIComponent(d.lrNo)+'&k='+encodeURIComponent(d.k)+'">Link to this LR</a>':'';
+    showRes((stale?'<div class="upd" role="status"><i aria-hidden="true"></i>Showing last known status, checking for updates...</div>':'')
+      +badge('ok','&#10003;','Genuine LR issued by Aditya Transport',done?'This consignment has been delivered.':'This consignment is on its way.')
+      +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(d.lrNo)+'</span><span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span></div>'
+      +((d.from||d.to)?'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>':'')
+      +'<ul class="tl">'+li+'</ul><div class="links">'+share+'<a href="tel:+918007500060">Call us about this LR</a></div>');
+    document.title=(done?'Delivered: ':'In transit: ')+d.lrNo+' | Aditya Transport';
+    $('ttl').textContent='Track another shipment';
+  }
+  function setUrl(d){try{history.replaceState(null,'','?lr='+encodeURIComponent(d.lrNo)+'&k='+encodeURIComponent(d.k))}catch(e){}}
+  function fromQR(lr,k){
+    var key=lr+'|'+k,c=cget(key);
+    if(c)render(c,true);else showLoading('Checking this LR and its delivery status...');
+    call({action:'verify',lr:lr,k:k}).then(function(j){
+      if(!j||!j.ok)showRes(badge('warn','!','Could not check right now',esc((j&&j.error)||'Please try again.')));
+      else if(j.status==='genuine'){render(j);cput(key,j)}
+      else if(j.status==='cancelled')showRes(badge('warn','!','This LR has been cancelled','LR '+esc(j.lrNo)+' was issued by Aditya Transport but is no longer valid. Please contact us before accepting it.'));
+      else showRes(badge('bad','&#10005;','Not a valid Aditya Transport LR','We have no record matching this code. The LR may be altered or fake. Please contact us at info@adityatransport.com or +91 80075 00060.'));
+    }).catch(function(){showRes(badge('warn','!','Could not check right now','Check your internet connection and try again.'))});
   }
   function run(lr,veh){
-    go.disabled=true;go.innerHTML='<span class="sp"></span>Checking...';out.innerHTML='<div class="ld" role="status"><span class="sp"></span><span>Looking up your shipment...</span><span class="tr"></span></div>';
-    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'track',lr:lr,veh:veh})})
-      .then(function(r){return r.json()})
-      .then(function(d){
-        if(d&&d.ok&&d.status==='genuine')show(d);
-        else if(d&&d.ok&&d.status==='notfound')err('We could not find a shipment with this LR number and vehicle number. Please check both and try again, or call us on +91 80075 00060.');
-        else err((d&&d.error)||'Something went wrong. Please try again in a moment.');
-      })
-      .catch(function(){err('Could not reach the tracking service. Please check your internet and try again.')})
-      .then(function(){go.disabled=false;go.textContent='Track shipment'});
+    msg.hidden=true;go.disabled=true;go.innerHTML='<span class="sp"></span>Tracking...';
+    showLoading('Searching for LR '+lr+'...');
+    call({action:'track',lr:lr,veh:veh}).then(function(j){
+      if(!j||!j.ok){hideRes();setMsg((j&&j.error)||'Could not check right now. Please try again.')}
+      else if(j.status==='genuine'){render(j);cput(j.lrNo+'|'+j.k,j);setUrl(j)}
+      else{hideRes();setMsg('No consignment found with this LR number and vehicle number. Please check both against your LR and try again, or call +91 80075 00060.')}
+    }).catch(function(){hideRes();setMsg('Could not reach our system. Check your internet connection and try again.')})
+    .then(function(){go.disabled=false;go.textContent='Track shipment'});
   }
-  try{var q=new URLSearchParams(location.search),ql=(q.get('lr')||'').trim(),qv=(q.get('veh')||'').trim();
-    if(ql&&qv){f.lr.value=ql;f.veh.value=qv;run(ql,qv)}else{if(ql)f.lr.value=ql;if(qv)f.veh.value=qv}}catch(e){}
+  var nl=function(v){return v.replace(/\s+/g,'').toUpperCase()},nv=function(v){return v.replace(/[^A-Za-z0-9]/g,'').toUpperCase()};
   f.addEventListener('submit',function(e){
     e.preventDefault();
-    var lr=f.lr.value.trim(),veh=f.veh.value.trim();
-    if(!lr||!veh){err('Please enter both the LR number and the vehicle number.');return}
+    var lr=nl(f.lr.value),veh=nv(f.veh.value);
+    if(!lr||!veh){hideRes();setMsg('Please enter both the LR number and the vehicle number.');return}
     run(lr,veh);
   });
+  var q=new URLSearchParams(location.search),ql=(q.get('lr')||'').trim(),qk=(q.get('k')||'').trim(),qv=(q.get('veh')||'').trim();
+  if(ql&&qk){f.lr.value=nl(ql);fromQR(nl(ql),qk)}
+  else if(ql&&qv){f.lr.value=nl(ql);f.veh.value=nv(qv);run(nl(ql),nv(qv))}
+  else{if(ql)f.lr.value=nl(ql);if(qv)f.veh.value=nv(qv)}
 })();
 </script>
 </body>
