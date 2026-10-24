@@ -130,12 +130,11 @@ button.go:disabled{opacity:.6;cursor:wait}
       {c:done?'done':'wait',i:done?'&#10003;':'',t:done?'Delivered':'Delivery',s:done?((d.deliveredOn?esc(d.deliveredOn)+' &middot; ':'')+'Delivered to '+esc(d.to||'consignee')):'Awaiting delivery to '+esc(d.to||'consignee')}
     ];
     var li=steps.map(function(x){return '<li class="'+x.c+'"><span class="dot" aria-hidden="true">'+x.i+'</span><b>'+x.t+'</b><span>'+x.s+'</span></li>'}).join('');
-    var share=d.k?'<a href="/track?lr='+encodeURIComponent(d.lrNo)+'&k='+encodeURIComponent(d.k)+'">Link to this LR</a>':'';
     showRes((stale?'<div class="upd" role="status"><i aria-hidden="true"></i>Showing last known status, checking for updates...</div>':'')
       +badge('ok','&#10003;','Genuine LR issued by Aditya Transport',done?'This consignment has been delivered.':'This consignment is on its way.')
       +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(d.lrNo)+'</span><span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span></div>'
       +((d.from||d.to)?'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>':'')
-      +'<ul class="tl">'+li+'</ul><div class="links">'+share+'<a href="tel:+918007500060">Call us about this LR</a></div>');
+      +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="tel:+918007500060">Call us about this LR</a></div>');
     document.title=(done?'Delivered: ':'In transit: ')+d.lrNo+' | Aditya Transport';
     $('ttl').textContent='Track another shipment';
   }
