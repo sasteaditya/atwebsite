@@ -53,6 +53,14 @@ button.go:disabled{opacity:.6;cursor:wait}
 .links{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
 .links a{color:var(--blue);font-weight:600;text-decoration:none}
 .help{margin-top:22px;text-align:center;color:var(--muted);font-size:14px}.help a{color:var(--blue);font-weight:600;text-decoration:none}
+.ld{display:flex;align-items:center;gap:14px;padding:6px 2px;color:var(--muted);font-weight:600}
+.sp{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--blue);animation:spin .8s linear infinite;flex:none}
+.ld .tr{position:relative;flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.ld .tr:after{content:"";position:absolute;top:0;bottom:0;width:38%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--blue));animation:slide 1.2s ease-in-out infinite}
+button.go .sp{display:inline-block;vertical-align:-6px;width:18px;height:18px;border-width:2.5px;border-color:rgba(11,31,58,.25);border-top-color:#0b1f3a;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slide{0%{left:-40%}100%{left:102%}}
+@media(prefers-reduced-motion:reduce){.sp,.ld .tr:after{animation-duration:2.4s}}
 </style>
 </head>
 <body>
@@ -93,7 +101,7 @@ button.go:disabled{opacity:.6;cursor:wait}
       +'<ul class="tl">'+li+'</ul><div class="links">'+vl+'<a href="tel:+918007500060">Call us about this LR</a></div>';
   }
   function run(lr,veh){
-    go.disabled=true;go.textContent='Checking...';out.innerHTML='';
+    go.disabled=true;go.innerHTML='<span class="sp"></span>Checking...';out.innerHTML='<div class="ld" role="status"><span class="sp"></span><span>Looking up your shipment...</span><span class="tr"></span></div>';
     fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'track',lr:lr,veh:veh})})
       .then(function(r){return r.json()})
       .then(function(d){
