@@ -83,7 +83,7 @@ button.go:disabled{opacity:.6;cursor:wait}
 <body>
 <header>
   <a href="/"><img class="logo-light" src="/images/logo.png" alt="Aditya Transport"><img class="logo-dark" src="/images/logo-light.png" alt="Aditya Transport"></a>
-  <a class="back" href="/">&larr; Back to website</a>
+  <a class="back" href="/">&larr; Back to Home</a>
 </header>
 <main>
   <h1 id="ttl">Track your shipment</h1>
@@ -96,7 +96,7 @@ button.go:disabled{opacity:.6;cursor:wait}
     <p class="hint">Both are printed on your LR. Spaces and dashes do not matter.</p>
     <div class="badge bad msg" id="msg" hidden role="alert"></div>
   </form>
-  <p class="help">Need help? Call <a href="tel:+918007500060">+91 80075 00060</a> or write to <a href="mailto:info@adityatransport.com">info@adityatransport.com</a></p>
+  <p class="help">Need help? Write to <a href="mailto:support@adityatransport.com">support@adityatransport.com</a></p>
 </main>
 <script>
 (function(){
@@ -134,7 +134,7 @@ button.go:disabled{opacity:.6;cursor:wait}
       +badge('ok','&#10003;','Genuine LR issued by Aditya Transport',done?'This consignment has been delivered.':'This consignment is on its way.')
       +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(d.lrNo)+'</span><span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span></div>'
       +((d.from||d.to)?'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>':'')
-      +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="tel:+918007500060">Call us about this LR</a></div>');
+      +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="mailto:support@adityatransport.com">Email us about this LR</a></div>');
     document.title=(done?'Delivered: ':'In transit: ')+d.lrNo+' | Aditya Transport';
     $('ttl').textContent='Track another shipment';
   }
@@ -146,7 +146,7 @@ button.go:disabled{opacity:.6;cursor:wait}
       if(!j||!j.ok)showRes(badge('warn','!','Could not check right now',esc((j&&j.error)||'Please try again.')));
       else if(j.status==='genuine'){render(j);cput(key,j)}
       else if(j.status==='cancelled')showRes(badge('warn','!','This LR has been cancelled','LR '+esc(j.lrNo)+' was issued by Aditya Transport but is no longer valid. Please contact us before accepting it.'));
-      else showRes(badge('bad','&#10005;','Not a valid Aditya Transport LR','We have no record matching this code. The LR may be altered or fake. Please contact us at info@adityatransport.com or +91 80075 00060.'));
+      else showRes(badge('bad','&#10005;','Not a valid Aditya Transport LR','We have no record matching this code. The LR may be altered or fake. Please contact us at support@adityatransport.com.'));
     }).catch(function(){showRes(badge('warn','!','Could not check right now','Check your internet connection and try again.'))});
   }
   function run(lr,veh){
@@ -155,7 +155,7 @@ button.go:disabled{opacity:.6;cursor:wait}
     call({action:'track',lr:lr,veh:veh}).then(function(j){
       if(!j||!j.ok){hideRes();setMsg((j&&j.error)||'Could not check right now. Please try again.')}
       else if(j.status==='genuine'){render(j);cput(j.lrNo+'|'+j.k,j);setUrl(j)}
-      else{hideRes();setMsg('No consignment found with this LR number and vehicle number. Please check both against your LR and try again, or call +91 80075 00060.')}
+      else{hideRes();setMsg('No consignment found with this LR number and vehicle number. Please check both against your LR and try again, or write to support@adityatransport.com.')}
     }).catch(function(){hideRes();setMsg('Could not reach our system. Check your internet connection and try again.')})
     .then(function(){go.disabled=false;go.textContent='Track shipment'});
   }
