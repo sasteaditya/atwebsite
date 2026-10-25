@@ -40,6 +40,11 @@ button.go:disabled{opacity:.6;cursor:wait}
 .pill{border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700}
 .pill.d{background:var(--okbg);color:var(--ok)}.pill.t{background:var(--warnbg);color:var(--warn)}
 .route{color:var(--muted);margin:8px 0 4px;overflow-wrap:anywhere}.route b{color:var(--ink)}
+.drops{margin:16px 0 4px;display:flex;flex-direction:column;gap:8px}.drops h3{font-size:14px;margin:0 0 2px}
+.drop{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.drop .dn{flex:none;width:24px;height:24px;border-radius:50%;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:12px}
+.drop .dt{flex:1;min-width:0;overflow-wrap:anywhere}.drop .dt span{color:var(--muted)}.drop .dt small{display:block;color:var(--muted);font-size:12px}
+.drop .pill{flex:none;font-size:12px;padding:3px 10px}
 .tl{list-style:none;margin:18px 0 6px;padding:0}
 .tl li{position:relative;padding:0 0 22px 38px;min-height:42px}
 .tl li:last-child{padding-bottom:0}
@@ -139,6 +144,7 @@ button.go:disabled{opacity:.6;cursor:wait}
       +badge('ok','&#10003;',title,sub)
       +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(id)+'</span>'+pill+'</div>'
       +((d.from||d.to)?'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>':'')
+      +(d.drops&&d.drops.length?'<div class="drops"><h3>Deliveries on this vehicle</h3>'+d.drops.map(function(x,i){return '<div class="drop"><span class="dn">'+(i+1)+'</span><div class="dt"><b>'+esc(x.to||'-')+'</b>'+(x.toPlace?' <span>('+esc(x.toPlace)+')</span>':'')+'<small>'+(x.lrNo?'LR '+esc(x.lrNo):'LR after loading')+'</small></div><span class="pill '+(x.stage==='delivered'?'d':'t')+'">'+(x.stage==='delivered'?'Delivered'+(x.deliveredOn?' '+esc(x.deliveredOn):''):x.stage==='transit'?'In transit':'Awaiting loading')+'</span></div>'}).join('')+'</div>':'')
       +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="mailto:support@adityatransport.com">Email us about this '+(placed?'placement':'LR')+'</a></div>');
     document.title=(placed?'Vehicle placed: ':done?'Delivered: ':'In transit: ')+id+' | Aditya Transport';
     $('ttl').textContent='Track another shipment';
