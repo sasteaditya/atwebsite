@@ -87,13 +87,13 @@ button.go:disabled{opacity:.6;cursor:wait}
 </header>
 <main>
   <h1 id="ttl">Track your shipment</h1>
-  <p class="lead">Enter the LR number from your lorry receipt and the vehicle number to see where your load stands.</p>
+  <p class="lead">Enter the LR number from your lorry receipt (or the placement number from your vehicle placed email) and the vehicle number to see where your load stands.</p>
   <section class="card" id="res" hidden></section>
   <form class="card" id="f" autocomplete="off" novalidate>
-    <div class="f"><label for="lr">LR number</label><input id="lr" name="lr" placeholder="Enter LR number" inputmode="text" autocapitalize="characters" required></div>
+    <div class="f"><label for="lr">LR or Placement number</label><input id="lr" name="lr" placeholder="Enter LR or placement number" inputmode="text" autocapitalize="characters" required></div>
     <div class="f"><label for="veh">Vehicle number</label><input id="veh" name="veh" placeholder="Enter vehicle number" autocapitalize="characters" required></div>
     <button class="go" type="submit" id="go">Track shipment</button>
-    <p class="hint">Both are printed on your LR. Spaces and dashes do not matter.</p>
+    <p class="hint">Spaces and dashes do not matter.</p>
     <div class="badge bad msg" id="msg" hidden role="alert"></div>
   </form>
   <p class="help">Need help? Write to <a href="mailto:support@adityatransport.com">support@adityatransport.com</a></p>
@@ -123,19 +123,24 @@ button.go:disabled{opacity:.6;cursor:wait}
   function cget(k){try{return JSON.parse(localStorage.getItem('trk:'+k)||'null')}catch(e){return null}}
   function cput(k,j){try{localStorage.setItem('trk:'+k,JSON.stringify(j))}catch(e){}}
   function render(d,stale){
-    var done=!!d.delivered;
-    var steps=[
-      {c:'done',i:'&#10003;',t:'LR issued',s:esc(d.date)+(d.from?' &middot; Booked by '+esc(d.from):'')},
-      {c:done?'done':'now',i:done?'&#10003;':'',t:done?'Transported':'In transit',s:(d.veh?'Vehicle '+esc(d.veh):'On the way')+((d.fromPlace||d.toPlace)?' &middot; '+esc(d.fromPlace||'')+' &rarr; '+esc(d.toPlace||''):'')},
-      {c:done?'done':'wait',i:done?'&#10003;':'',t:done?'Delivered':'Delivery',s:done?((d.deliveredOn?esc(d.deliveredOn)+' &middot; ':'')+'Delivered to '+esc(d.to||'consignee')):'Awaiting delivery to '+esc(d.to||'consignee')}
-    ];
+    var st=d.stage||(d.delivered?'delivered':'transit'),done=st==='delivered',placed=st==='placed',id=d.lrNo||d.placementNo||'';
+    var route=function(x,y){return esc(x||'')+' &rarr; '+esc(y||'')};
+    var vinfo=[d.veh?'Vehicle '+esc(d.veh):'',d.vehType?esc(d.vehType):'',d.capacity?esc(d.capacity)+' MT':''].filter(Boolean).join(' &middot; ');
+    var steps=[],n=0;
+    if(placed||d.placementNo||d.placedOn){n++;steps.push({c:placed?'now':'done',i:placed?'':'&#10003;',t:placed?'Vehicle placed, going to load':'Vehicle placed',s:(d.placedOn?esc(d.placedOn)+' &middot; ':'')+(vinfo||'Vehicle assigned')+(d.from?' &middot; Loading at '+esc(d.from)+(d.fromPlace?' ('+esc(d.fromPlace)+')':''):'')+(placed&&d.expectedLoading?' &middot; Expected loading '+esc(d.expectedLoading):'')})}
+    n++;steps.push({c:placed?'wait':'done',i:placed?String(n):'&#10003;',t:placed?'Loading and LR':'Loaded, LR issued',s:placed?'LR will be issued after loading and invoice':esc(d.date)+(d.lrNo?' &middot; LR '+esc(d.lrNo):'')+(d.from?' &middot; Booked by '+esc(d.from):'')});
+    n++;steps.push({c:placed?'wait':done?'done':'now',i:placed?String(n):done?'&#10003;':'',t:done?'Transported':'In transit',s:placed?'Starts after loading':(d.veh?'Vehicle '+esc(d.veh):'On the way')+((d.fromPlace||d.toPlace)?' &middot; '+route(d.fromPlace,d.toPlace):'')});
+    n++;steps.push({c:done?'done':'wait',i:done?'&#10003;':String(n),t:done?'Delivered':'Delivery',s:done?((d.deliveredOn?esc(d.deliveredOn)+' &middot; ':'')+'Delivered to '+esc(d.to||'consignee')):'Awaiting delivery to '+esc(d.to||'consignee')});
     var li=steps.map(function(x){return '<li class="'+x.c+'"><span class="dot" aria-hidden="true">'+x.i+'</span><b>'+x.t+'</b><span>'+x.s+'</span></li>'}).join('');
+    var pill=placed?'<span class="pill t">Vehicle placed</span>':'<span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span>';
+    var title=placed?'Vehicle placed by Aditya Transport':'Genuine LR issued by Aditya Transport';
+    var sub=placed?'A vehicle is on its way to the loading point. The LR will be issued after loading.':done?'This consignment has been delivered.':'This consignment is on its way.';
     showRes((stale?'<div class="upd" role="status"><i aria-hidden="true"></i>Showing last known status, checking for updates...</div>':'')
-      +badge('ok','&#10003;','Genuine LR issued by Aditya Transport',done?'This consignment has been delivered.':'This consignment is on its way.')
-      +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(d.lrNo)+'</span><span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span></div>'
+      +badge('ok','&#10003;',title,sub)
+      +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(id)+'</span>'+pill+'</div>'
       +((d.from||d.to)?'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>':'')
-      +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="mailto:support@adityatransport.com">Email us about this LR</a></div>');
-    document.title=(done?'Delivered: ':'In transit: ')+d.lrNo+' | Aditya Transport';
+      +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="mailto:support@adityatransport.com">Email us about this '+(placed?'placement':'LR')+'</a></div>');
+    document.title=(placed?'Vehicle placed: ':done?'Delivered: ':'In transit: ')+id+' | Aditya Transport';
     $('ttl').textContent='Track another shipment';
   }
   function setUrl(d){try{history.replaceState(null,'','?lr='+encodeURIComponent(d.lrNo)+'&k='+encodeURIComponent(d.k))}catch(e){}}
@@ -150,14 +155,14 @@ button.go:disabled{opacity:.6;cursor:wait}
     }).catch(function(){showRes(badge('warn','!','Could not check right now','Check your internet connection and try again.'))});
   }
   function run(lr,veh){
-    if(!/^ATLR/.test(lr)&&/^ATLR/.test(veh)){var x=lr;lr=veh;veh=x}
+    var isId=function(v){return /^AT(LR|VP)/.test(v)};if(!isId(lr)&&isId(veh)){var x=lr;lr=veh;veh=x}
     f.lr.value=lr;f.veh.value=veh;
     msg.hidden=true;go.disabled=true;go.innerHTML='<span class="sp"></span>Tracking...';
-    showLoading('Searching for LR '+lr+'...');
+    showLoading('Searching for '+lr+'...');
     call({action:'track',lr:lr,veh:veh}).then(function(j){
       if(!j||!j.ok){hideRes();setMsg((j&&j.error)||'Could not check right now. Please try again.')}
-      else if(j.status==='genuine'){render(j);cput(j.lrNo+'|'+j.k,j);setUrl(j)}
-      else{hideRes();setMsg('No consignment found with this LR number and vehicle number. Please check both against your LR and try again, or write to support@adityatransport.com.')}
+      else if(j.status==='genuine'){render(j);if(j.lrNo&&j.k){cput(j.lrNo+'|'+j.k,j);setUrl(j)}else{try{history.replaceState(null,'','?lr='+encodeURIComponent(j.placementNo||lr)+'&veh='+encodeURIComponent(String(j.veh||veh).replace(/\s+/g,'')))}catch(e){}}}
+      else{hideRes();setMsg('No consignment found with this LR or placement number and vehicle number. Please check both and try again, or write to support@adityatransport.com.')}
     }).catch(function(){hideRes();setMsg('Could not reach our system. Check your internet connection and try again.')})
     .then(function(){go.disabled=false;go.textContent='Track shipment'});
   }
@@ -165,7 +170,7 @@ button.go:disabled{opacity:.6;cursor:wait}
   f.addEventListener('submit',function(e){
     e.preventDefault();
     var lr=nl(f.lr.value),veh=nv(f.veh.value);
-    if(!lr||!veh){hideRes();setMsg('Please enter both the LR number and the vehicle number.');return}
+    if(!lr||!veh){hideRes();setMsg('Please enter both the LR or placement number and the vehicle number.');return}
     run(lr,veh);
   });
   var q=new URLSearchParams(location.search),ql=(q.get('lr')||'').trim(),qk=(q.get('k')||'').trim(),qv=(q.get('veh')||'').trim();
