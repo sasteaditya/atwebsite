@@ -161,6 +161,12 @@ button.go:disabled{opacity:.6;cursor:wait}
     showLoading('Searching for '+lr+'...');
     call({action:'track',lr:lr,veh:veh}).then(function(j){
       if(!j||!j.ok){hideRes();setMsg((j&&j.error)||'Could not check right now. Please try again.')}
+      else if(j.status==='cancelled'){
+        if(j.replacedBy){
+          showRes(badge('warn','&#8635;','This vehicle was replaced','Vehicle '+esc(j.veh)+' (placement '+esc(j.placementNo)+') was cancelled'+(j.reason?' due to '+esc(j.reason):'')+'. A new vehicle <b>'+esc(j.replacedBy.veh)+'</b> has been placed'+(j.orderNo?' for order '+esc(j.orderNo):'')+'.')+'<button type="button" class="go" id="trkNew">Track the new vehicle</button>');
+          $('trkNew').onclick=function(){run(nl(String(j.replacedBy.placementNo||'')),nv(String(j.replacedBy.veh||'')))};
+        }else showRes(badge('warn','!','This vehicle placement was cancelled','Placement '+esc(j.placementNo)+' (vehicle '+esc(j.veh)+')'+(j.reason?' was cancelled due to '+esc(j.reason):' is no longer active')+'. If your order is re-planned, you will receive new vehicle details by email.'));
+      }
       else if(j.status==='genuine'){render(j);if(j.lrNo&&j.k){cput(j.lrNo+'|'+j.k,j);setUrl(j)}else{try{history.replaceState(null,'','?lr='+encodeURIComponent(j.placementNo||lr)+'&veh='+encodeURIComponent(String(j.veh||veh).replace(/\s+/g,'')))}catch(e){}}}
       else{hideRes();setMsg('No consignment found with this LR or placement number and vehicle number. Please check both and try again, or write to support@adityatransport.com.')}
     }).catch(function(){hideRes();setMsg('Could not reach our system. Check your internet connection and try again.')})
