@@ -147,21 +147,22 @@ body{position:relative}header,main{position:relative;z-index:1}
   function cget(k){try{return JSON.parse(localStorage.getItem('trk:'+k)||'null')}catch(e){return null}}
   function cput(k,j){try{localStorage.setItem('trk:'+k,JSON.stringify(j))}catch(e){}}
   function render(d,stale){
-    var st=d.stage||(d.delivered?'delivered':'transit'),done=st==='delivered',placed=st==='placed',id=d.lrNo||d.placementNo||'';
+    var st=d.stage||(d.delivered?'delivered':'transit'),done=st==='delivered',placed=st==='placed',id=d.clientLrNo||d.lrNo||d.placementNo||'';
     var route=function(x,y){return esc(x||'')+' &rarr; '+esc(y||'')};
     var vinfo=[d.veh?'Vehicle '+esc(d.veh):'',d.vehType?esc(d.vehType):'',d.capacity?esc(d.capacity)+' MT':''].filter(Boolean).join(' &middot; ');
     var steps=[],n=0;
     if(placed||d.placementNo||d.placedOn){n++;steps.push({c:placed?'now':'done',i:placed?'':'&#10003;',t:placed?'Vehicle placed, going to load':'Vehicle placed',s:(d.placedOn?esc(d.placedOn)+' &middot; ':'')+(vinfo||'Vehicle assigned')+(d.from?' &middot; Loading at '+esc(d.from)+(d.fromPlace?' ('+esc(d.fromPlace)+')':''):'')+(placed&&d.expectedLoading?' &middot; Expected loading '+esc(d.expectedLoading):'')})}
-    n++;steps.push({c:placed?'wait':'done',i:placed?String(n):'&#10003;',t:placed?'Loading and LR':'Loaded, LR issued',s:placed?'LR will be issued after loading and invoice':esc(d.date)+(d.lrNo?' &middot; LR '+esc(d.lrNo):'')+(d.from?' &middot; Booked by '+esc(d.from):'')});
+    n++;steps.push({c:placed?'wait':'done',i:placed?String(n):'&#10003;',t:placed?'Loading and LR':'Loaded, LR issued',s:placed?'LR will be issued after loading and invoice':esc(d.date)+((d.clientLrNo||d.lrNo)?' &middot; LR '+esc(d.clientLrNo||d.lrNo):'')+(d.from?' &middot; Booked by '+esc(d.from):'')});
     n++;steps.push({c:placed?'wait':done?'done':'now',i:placed?String(n):done?'&#10003;':'',t:done?'Transported':'In transit',s:placed?'Starts after loading':(d.veh?'Vehicle '+esc(d.veh):'On the way')+((d.fromPlace||d.toPlace)?' &middot; '+route(d.fromPlace,d.toPlace):'')});
     n++;steps.push({c:done?'done':'wait',i:done?'&#10003;':String(n),t:done?'Delivered':'Delivery',s:done?((d.deliveredOn?esc(d.deliveredOn)+' &middot; ':'')+'Delivered to '+esc(d.to||'consignee')):'Awaiting delivery to '+esc(d.to||'consignee')});
     var li=steps.map(function(x){return '<li class="'+x.c+'"><span class="dot" aria-hidden="true">'+x.i+'</span><b>'+x.t+'</b><span>'+x.s+'</span></li>'}).join('');
     var pill=placed?'<span class="pill t">Vehicle placed</span>':'<span class="pill '+(done?'d':'t')+'">'+(done?'Delivered':'In transit')+'</span>';
-    var title=placed?'Vehicle placed by Aditya Transport':'Genuine LR issued by Aditya Transport';
-    var sub=placed?'A vehicle is on its way to the loading point. The LR will be issued after loading.':done?'This consignment has been delivered.':'This consignment is on its way.';
+    var title=placed?(d.replaces?'Replacement vehicle placed by Aditya Transport':'Vehicle placed by Aditya Transport'):(d.clientLrNo?'Consignment with Aditya Transport':'Genuine LR issued by Aditya Transport');
+    var sub=placed?(d.replaces?'This vehicle replaces '+esc(d.replaces)+'. It is on its way to the loading point.':'A vehicle is on its way to the loading point. The LR will be issued after loading.'):done?'This consignment has been delivered.':'This consignment is on its way.';
     showRes((stale?'<div class="upd" role="status"><i aria-hidden="true"></i>Showing last known status, checking for updates...</div>':'')
       +badge('ok','&#10003;',title,sub)
       +'<div class="lrhead" style="margin-top:16px"><span class="no">'+esc(id)+'</span>'+pill+'</div>'
+      +(d.clientLrNo&&d.lrNo?'<div class="route">Trip No. <b>'+esc(d.lrNo)+'</b></div>':'')
       +((d.from||d.to)?'<div class="route"><b>'+esc(d.from||'')+'</b>'+(d.to?' &rarr; <b>'+esc(d.to)+'</b>':'')+'</div>':'')
       +(d.drops&&d.drops.length?'<div class="drops"><h3>Deliveries on this vehicle</h3>'+d.drops.map(function(x,i){return '<div class="drop"><span class="dn">'+(i+1)+'</span><div class="dt"><b>'+esc(x.to||'-')+'</b>'+(x.toPlace?' <span>('+esc(x.toPlace)+')</span>':'')+'<small>'+(x.lrNo?'LR '+esc(x.lrNo):'LR after loading')+'</small></div><span class="pill '+(x.stage==='delivered'?'d':'t')+'">'+(x.stage==='delivered'?'Delivered'+(x.deliveredOn?' '+esc(x.deliveredOn):''):x.stage==='transit'?'In transit':'Awaiting loading')+'</span></div>'}).join('')+'</div>':'')
       +'<ul class="tl">'+li+'</ul><div class="links">'+'<a href="mailto:support@adityatransport.com">Email us about this '+(placed?'placement':'LR')+'</a></div>');
