@@ -84,7 +84,6 @@ button.go:disabled{opacity:.6;cursor:wait}
 @keyframes breathe{0%,100%{opacity:1}50%{opacity:.35}}
 @media(prefers-reduced-motion:reduce){.sp,.ring,.bar span,.skel i,.skel b{animation:breathe 1.2s ease-in-out infinite}.bar span{left:0;width:100%}}
 /* DIWALI:START (remove this block, the .dw-offer element and the DIWALI script to disable) */
-#dwBg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 #dwDeco{position:absolute;left:0;right:0;top:0;height:260px;pointer-events:none;z-index:2;overflow:hidden}
 @keyframes dwtw{0%,100%{opacity:.35}50%{opacity:1}}
 .dw-lan{position:absolute;top:0;width:60px;transform-origin:50% 0;animation:dwsway 4.2s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,160,0,.5))}
@@ -213,23 +212,11 @@ body{position:relative}header,main{position:relative;z-index:1}
 </script>
 <!-- DIWALI:START -->
 <script>
-(function(){var DIWALI_ON=true;/* set to false to switch off the Diwali wish, fireworks and lamps */
+(function(){var DIWALI_ON=true;/* set to false to switch off the Diwali wish and lamps */
 if(!DIWALI_ON){var o=document.querySelector('.dw-wish');if(o)o.remove();return}
-var hero=document.body;var c=document.createElement('canvas');c.id='dwBg';c.setAttribute('aria-hidden','true');hero.insertBefore(c,hero.firstChild);
+var hero=document.body;
 var d=document.createElement('div');d.id='dwDeco';d.setAttribute('aria-hidden','true');hero.appendChild(d);
-var bc=['#ffb300','#ff3d2e','#43d15a','#2f6bff','#f5f5f5'];
 d.innerHTML='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="dwbrs" x1="0" x2="1"><stop offset="0" stop-color="#b8860b"/><stop offset=".45" stop-color="#ffe082"/><stop offset="1" stop-color="#a06a00"/></linearGradient><linearGradient id="dwfl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7043"/><stop offset=".5" stop-color="#ffb300"/><stop offset="1" stop-color="#fffde7"/></linearGradient></defs></svg><span class="dw-lan" style="left:2px;animation-delay:-1s"><svg viewBox="0 0 100 150" aria-hidden="true"><circle cx="50" cy="10" r="5" fill="none" stroke="#b8860b" stroke-width="2.2"/><line x1="50" y1="-60" x2="50" y2="5" stroke="#7a5a1e" stroke-width="1.5"/><g stroke="#b8860b" stroke-width="1.6" stroke-dasharray="2.4 1.6" fill="none"><line x1="50" y1="14" x2="16" y2="84"/><line x1="50" y1="14" x2="84" y2="84"/><line x1="50" y1="14" x2="50" y2="70"/></g><path class="fl" d="M50 52 C41 66 43 80 50 83 C57 80 59 66 50 52Z" fill="url(#dwfl)"/><path d="M10 84 Q50 92 90 84 Q86 118 50 124 Q14 118 10 84Z" fill="url(#dwbrs)" stroke="#8a5a00" stroke-width="1.2"/><ellipse cx="50" cy="84" rx="40" ry="6" fill="#ffd54f" stroke="#8a5a00" stroke-width="1"/><path d="M26 98 Q50 106 74 98" stroke="#8a5a00" stroke-width="1" fill="none"/><path d="M30 108 Q50 114 70 108" stroke="#8a5a00" stroke-width="1" fill="none"/><ellipse cx="50" cy="82" rx="6" ry="2.6" fill="#ffe082"/><g stroke="#b8860b" stroke-width="1.2"><line x1="28" y1="120" x2="28" y2="132"/><line x1="50" y1="123" x2="50" y2="132"/><line x1="72" y1="120" x2="72" y2="132"/></g><g fill="#ffd54f" stroke="#8a5a00" stroke-width=".8"><path d="M24 140 Q28 130 32 140Z"/><path d="M46 140 Q50 130 54 140Z"/><path d="M68 140 Q72 130 76 140Z"/></g></svg></span><span class="dw-lan" style="right:2px;animation-delay:-2.6s"><svg viewBox="0 0 100 150" aria-hidden="true"><circle cx="50" cy="10" r="5" fill="none" stroke="#b8860b" stroke-width="2.2"/><line x1="50" y1="-60" x2="50" y2="5" stroke="#7a5a1e" stroke-width="1.5"/><g stroke="#b8860b" stroke-width="1.6" stroke-dasharray="2.4 1.6" fill="none"><line x1="50" y1="14" x2="16" y2="84"/><line x1="50" y1="14" x2="84" y2="84"/><line x1="50" y1="14" x2="50" y2="70"/></g><path class="fl" d="M50 52 C41 66 43 80 50 83 C57 80 59 66 50 52Z" fill="url(#dwfl)"/><path d="M10 84 Q50 92 90 84 Q86 118 50 124 Q14 118 10 84Z" fill="url(#dwbrs)" stroke="#8a5a00" stroke-width="1.2"/><ellipse cx="50" cy="84" rx="40" ry="6" fill="#ffd54f" stroke="#8a5a00" stroke-width="1"/><path d="M26 98 Q50 106 74 98" stroke="#8a5a00" stroke-width="1" fill="none"/><path d="M30 108 Q50 114 70 108" stroke="#8a5a00" stroke-width="1" fill="none"/><ellipse cx="50" cy="82" rx="6" ry="2.6" fill="#ffe082"/><g stroke="#b8860b" stroke-width="1.2"><line x1="28" y1="120" x2="28" y2="132"/><line x1="50" y1="123" x2="50" y2="132"/><line x1="72" y1="120" x2="72" y2="132"/></g><g fill="#ffd54f" stroke="#8a5a00" stroke-width=".8"><path d="M24 140 Q28 130 32 140Z"/><path d="M46 140 Q50 130 54 140Z"/><path d="M68 140 Q72 130 76 140Z"/></g></svg></span>';
-var x=c.getContext('2d'),W,H,R=[],P=[],cols=['#ffb300','#ff8f00','#ff3d2e','#d32f2f','#43d15a','#2f6bff','#f5f5f5','#ffd166'];
-function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();addEventListener('resize',rs);
-function rocket(){var ty=H*(.1+Math.random()*.4);R.push({x:W*(.08+Math.random()*.84),y:H,ty:ty,vy:-Math.max(7+Math.random()*3,((H-ty)*.015+1.4)*1.06),c:cols[Math.random()*cols.length|0],t:[]})}
-function burst(px,py,col){var n=60+Math.random()*30|0,two=Math.random()<.4,c2=cols[Math.random()*cols.length|0];for(var i=0;i<n;i++){var a=i/n*6.283,s=(1.2+Math.random()*3.4);P.push({x:px,y:py,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c:(two&&i%2)?c2:col,r:1.6+Math.random()*1.2})}}
-function loop(){x.clearRect(0,0,W,H);
- R=R.filter(function(r){r.y+=r.vy;r.vy*=.985;r.t.push([r.x,r.y]);if(r.t.length>10)r.t.shift();
-  x.strokeStyle=r.c;x.lineWidth=2;x.globalAlpha=.7;x.beginPath();r.t.forEach(function(p,i){i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])});x.stroke();
-  if(r.y<=r.ty||r.vy>-1.2){burst(r.x,r.y,r.c);return false}return true});
- P=P.filter(function(p){return p.l>0});P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vx*=.98;p.vy=p.vy*.98+.05;p.l-=.012;x.globalAlpha=Math.max(p.l,0)*.9;x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fill()});
- x.globalAlpha=1;requestAnimationFrame(loop)}
-if(!matchMedia('(prefers-reduced-motion:reduce)').matches){loop();rocket();setInterval(function(){if(document.hidden)return;rocket();if(Math.random()<.5)setTimeout(rocket,300)},1300)}
 })();
 </script>
 <!-- DIWALI:END -->
