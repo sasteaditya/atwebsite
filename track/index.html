@@ -213,7 +213,7 @@ body{position:relative}header,main{position:relative;z-index:1}
 </script>
 <!-- DIWALI:START -->
 <script>
-(function(){var DIWALI_ON=true;/* set to false to switch off the Diwali wish and lamps */
+(function(){var DIWALI_END='2026-11-11T00:00:00+05:30';/* last day shown: 10 Nov 2026 (IST), then it switches itself off */var DIWALI_ON=Date.now()<new Date(DIWALI_END).getTime();/* set to false to switch off the Diwali wish and lamps */
 if(!DIWALI_ON){var o=document.querySelector('.dw-wish');if(o)o.remove();return}
 var hero=document.body;
 var d=document.createElement('div');d.id='dwDeco';d.setAttribute('aria-hidden','true');hero.appendChild(d);

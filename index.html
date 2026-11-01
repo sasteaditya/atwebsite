@@ -1840,7 +1840,7 @@ s.classList.add('pre');var io=new IntersectionObserver(function(es){es.forEach(f
 <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="87a2bb96-05b2-4b92-a79f-6949166439e6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
 <!-- DIWALI:START -->
 <script>
-(function(){var DIWALI_ON=true;/* set to false to switch off the Diwali offer and fireworks */
+(function(){var DIWALI_END='2026-11-11T00:00:00+05:30';/* last day shown: 10 Nov 2026 (IST), then it switches itself off */var DIWALI_ON=Date.now()<new Date(DIWALI_END).getTime();/* set to false to switch off the Diwali offer and fireworks */
 if(!DIWALI_ON){var o=document.querySelector('.dw-offer');if(o)o.remove();return}
 var hero=document.querySelector('.hero');if(!hero)return;
 var d=document.createElement('div');d.id='dwDeco';d.setAttribute('aria-hidden','true');hero.insertBefore(d,hero.children[1]||null);
